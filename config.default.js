@@ -1,6 +1,11 @@
 var config = {
-    db: 'mongodb://127.0.0.1/stone_book_dev',
-    db_name: 'stone_book_dev',
+    redishost: '127.0.0.1',
+    redisport: 6379,
+
+    db: 'test',
+    dbhost: '127.0.0.1',
+    dbuser: 'root',
+    dbpwd: '123456',
 
     session_secret: 'stonebook_dev',
     debug: true

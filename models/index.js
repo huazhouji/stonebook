@@ -1,13 +1,17 @@
-var mongoose = require('mongoose');
 var config = require('../config');
-
-mongoose.connect(config.db, function (err) {
-    if (err) {
-        console.error('connect to %s error: ', config.db, err.message);
-        process.exit(1);
-    }
+var mysql = require('mysql');
+var pool = mysql.createPool({
+    connectionLimit: 10,
+    host: config.dbhost,
+    user: config.dbuser,
+    database: config.db,
+    password: config.dbpwd
 });
 
-//require('./topic');
+pool.query('SELECT 1 + 1 AS solution', function (err, rows, fields) {
+    if (err) throw err;
 
-//exports.Topic = mongoose.model('Topic');
+    console.log('The solution is: ', rows[0].solution);
+});
+
+require('./topic');

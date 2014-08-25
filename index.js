@@ -5,12 +5,14 @@ var passport = require('passport');
 require('./models');
 var routes = require('./routes');
 var auth = require('./middlewares/auth');
-var MongoStore = require('connect-mongo')(session);
+var RedisStore = require('connect-redis')(session);
 var _ = require('lodash');
 var csurf = require('csurf');
 var compress = require('compression');
 var bodyParser = require('body-parser');
 var config = require('./config');
+require('mkdirp').sync('./logs');
+require('log4js').configure('log4js.json', { cwd: 'logs' });
 
 var staticDir = path.join(__dirname, 'public');
 
@@ -28,14 +30,16 @@ app.use(bodyParser.urlencoded({
 app.use(require('method-override')());
 app.use(require('cookie-parser')(config.session_secret));
 app.use(compress());
+
 app.use(session({
     secret: config.session_secret,
-    key: 'sid',
-    store: new MongoStore({
-        db: config.db_name
+    name: 'sid',
+    store: new RedisStore({
+        host: config.redishost,
+        port: config.redisport
     }),
-    resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    resave: true
 }));
 
 app.use(passport.initialize());
@@ -65,7 +69,7 @@ routes(app);
 
 // error handler
 app.use(function (err, req, res, next) {
-    return res.send(500, err.message);
+    return res.status(500).send(err.message);
 });
 
 var server = app.listen(3000, function () {
