@@ -1,4 +1,6 @@
 var config = {
+    port: 3000,
+
     redishost: '127.0.0.1',
     redisport: 6379,
 
